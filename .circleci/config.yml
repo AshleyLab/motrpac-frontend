@@ -42,4 +42,18 @@ jobs:
       - image: circleci/node:10.12-browsers
     steps:
       - checkout
-      - run: echo "A first hello"
+      - run:
+         name: yarn-install
+         command: yarn install
+     - restore_cache:
+         key: dependency-cache-{{ checksum "package.json" }}
+     - run:
+         name: yarn-sass
+         command: sass src/sass/main.scss src/main.css
+     - save_cache:
+         key: dependency-cache-{{ checksum "package.json" }}
+         paths:
+           - ./node_modules
+     - run:
+         name: yarn-test-ci
+         command: yarn test --ci
