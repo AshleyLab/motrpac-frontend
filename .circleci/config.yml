@@ -43,12 +43,12 @@ jobs:
     steps:
       - checkout
 
-     - restore_cache:
-         key: dependency-cache-{{ checksum "package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
 
-    - run:
-       name: yarn-install
-       command: yarn install
+      - run:
+          name: yarn-install
+          command: yarn install
 
      - run:
          name: yarn-sass
