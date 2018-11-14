@@ -40,7 +40,6 @@ jobs:
   build:
     docker:
       - image: circleci/node:10.12-browsers
-
     steps:
       - checkout
 
