@@ -39,7 +39,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10.12-browsers
+      # - image: circleci/node:10.12-browsers
       - image: circleci/ruby:2.5.3-node-browsers
     steps:
       - checkout
