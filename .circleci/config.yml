@@ -43,6 +43,10 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: ruby-sass
+          command: gem install sass
+
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
 
