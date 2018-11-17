@@ -72,4 +72,5 @@ jobs:
 
       - run:
           name: yarn-test-ci
-          command: yarn test --updateSnapshot --ci
+          # command: yarn test --updateSnapshot --ci
+          command: yarn test --ci
