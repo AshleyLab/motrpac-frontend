@@ -44,9 +44,13 @@ jobs:
     steps:
       - checkout
 
+      # - run:
+      #     name: ruby-sass
+      #     command: gem install sass
       - run:
-          name: ruby-sass
-          command: gem install sass
+          name: npm-sass
+          command: npm install -g sass
+
 
       - restore_cache:
           name: Restore core dependencies cache
