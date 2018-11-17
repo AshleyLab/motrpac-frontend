@@ -39,17 +39,17 @@ version: 2
 jobs:
   build:
     docker:
-      # - image: circleci/node:10.12-browsers
-      - image: circleci/ruby:2.5.3-node-browsers
+      - image: circleci/node:10.12-browsers
+      # - image: circleci/ruby:2.5.3-node-browsers
     steps:
       - checkout
 
       # - run:
       #     name: ruby-sass
       #     command: gem install sass
-      - run:
-          name: npm-sass
-          command: sudo npm install -g sass
+      # - run:
+      #     name: yarn-sass
+      #     command: sudo yarn install -g sass
 
 
       - restore_cache:
@@ -67,7 +67,7 @@ jobs:
 
       - run:
           name: yarn-sass
-          command: sass src/sass/main.scss src/main.css
+          command: node_modules/sass/sass.js src/sass/main.scss src/main.css
 
       # - save_cache:
       #     key: dependency-cache-{{ checksum "package.json" }}
