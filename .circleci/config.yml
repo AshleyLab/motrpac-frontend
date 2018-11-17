@@ -49,7 +49,7 @@ jobs:
       #     command: gem install sass
       - run:
           name: npm-sass
-          command: npm install -g sass
+          command: sudo npm install -g sass
 
 
       - restore_cache:
