@@ -65,10 +65,10 @@ jobs:
           name: yarn-sass
           command: sass src/sass/main.scss src/main.css
 
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+      # - save_cache:
+      #     key: dependency-cache-{{ checksum "package.json" }}
+      #     paths:
+      #       - ./node_modules
 
       - run:
           name: yarn-test-ci
