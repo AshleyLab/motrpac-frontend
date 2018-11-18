@@ -40,43 +40,32 @@ jobs:
   build:
     docker:
       - image: circleci/node:10.12-browsers
-      # - image: circleci/ruby:2.5.3-node-browsers
+
     steps:
       - checkout
 
-      # - run:
-      #     name: ruby-sass
-      #     command: gem install sass
-      # - run:
-      #     name: yarn-sass
-      #     command: sudo yarn install -g sass
-
-
       - restore_cache:
-          name: Restore core dependencies cache
+          name: Restore core JS dependencies cache
           keys:
-            - core-dependencies-v3-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-      - run:
-          name: yarn-install
-          command: yarn install
-      - save_cache:
-          name: Cache core dependencies
-          key: core-dependencies-v3-{{ checksum "yarn.lock" }}
+            - v1-js-dependencies-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
 
       - run:
-          name: yarn-sass
+          name: Install JS dependencies
+          command: yarn install
+
+      - save_cache:
+          name: Cache core JS dependencies
+          key: v1-js-dependencies-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+      - run:
+          name: Compile CSS
           command: node_modules/sass/sass.js src/sass/main.scss src/main.css
 
-      # - save_cache:
-      #     key: dependency-cache-{{ checksum "package.json" }}
-      #     paths:
-      #       - ./node_modules
-
       - run:
-          name: yarn-test-ci
+          name: Run Frontend tests
           # command: yarn test --updateSnapshot --ci
           command: yarn test --ci
