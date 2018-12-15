@@ -38,6 +38,7 @@ jobs:
 
       - run:
           name: Run Frontend tests
-          command: yarn test --updateSnapshot --ci
-          # use this line instead if we version control snapshots
-          # command: yarn test --ci
+          # use this line if snapshot tests will be enabled locally but not versioned
+          # command: yarn test --updateSnapshot --ci
+          # use this line instead if we version control OR disable snapshots
+          command: yarn test --ci
