@@ -15,11 +15,8 @@ import UploadScreenConnected from './components/uploadScreen';
 import AuthLoadingConnected from './components/authLoading';
 import LinkoutPageConnected from './components/linkoutPage';
 import AnalysisHomePageConnected from './components/analysisHomePage';
-<<<<<<< HEAD
-import ContactPage from './components/contactPage';
-=======
 import DownloadPageConnected from './components/downloadPage';
->>>>>>> a8b1d918dff6c7e943fe66c8047774d9e04f783e
+import ContactPage from './components/contactPage';
 
 const hist = History;
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
