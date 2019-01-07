@@ -10,12 +10,22 @@ import AllUploadStats from './allUploadStats';
 const previousUploads = require('../testData/testPreviousUploads');
 const allUploads = require('../testData/testAllUploads');
 
-export function Dashboard({ profile, isAuthenticated, featureAvailable }) {
+export function Dashboard({ profile, isAuthenticated, isFetching, featureAvailable }) {
   const editBtn = (
     <div className="col-auto">
       <Link className="editBtn btn btn-light disabled" to="/edit-dashboard">Edit Dashboard</Link>
     </div>
   );
+  if (isFetching) {
+    const callbackMsg = 'Authenticating...';
+
+    return (
+      <div className="authLoading">
+        <span className="oi oi-shield" />
+        <h3>{callbackMsg}</h3>
+      </div>
+    );
+  }
   if (isAuthenticated) {
     return (
       <div className="container Dashboard">
@@ -79,6 +89,7 @@ Dashboard.defaultProps = {
 const mapStateToProps = state => ({
   profile: state.auth.profile,
   isAuthenticated: state.auth.isAuthenticated,
+  isFetching: state.auth.isFetching,
 });
 
 // Fill dispatch to props once actions implemented

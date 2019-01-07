@@ -15,6 +15,7 @@ export function requestLogin() {
   };
 }
 
+
 export function loginSuccess(profile, token) {
   return {
     type: LOGIN_SUCCESS,
@@ -60,7 +61,6 @@ export function logoutAsync() {
     dispatch(receiveLogout());
   };
 }
-
 export function handleAuthCallbackAsync() {
   return (dispatch) => {
     auth.handleAuthentication((err, data) => {
@@ -82,4 +82,5 @@ export default {
   loginError,
   loginSuccess,
   logout: logoutAsync,
+  requestLogin,
 };

@@ -55,7 +55,7 @@ export function Navbar({ loggedIn = false }) {
 }
 
 const mapStateToProps = state => ({
-  loggedIn: state.auth.loggedIn,
+  loggedIn: state.auth.isAuthenticated,
 });
 
 // Fill dispatch to props once actions implemented

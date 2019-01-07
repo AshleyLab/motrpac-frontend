@@ -11,8 +11,9 @@ import LinkoutPageConnected from './components/linkoutPage';
 import AnalysisHomePageConnected from './components/analysisHomePage';
 import DownloadPageConnected from './components/downloadPage';
 import CallbackConnected from './components/callback';
+import History from './history';
 
-function App({ history }) {
+function App({ history = History }) {
   return (
     <div className="App">
       <header>
@@ -34,8 +35,4 @@ function App({ history }) {
   );
 }
 
-App.propTypes = {
-  history: PropTypes.object
-};
-
-export default withRouter(App);
+export default App;

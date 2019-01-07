@@ -2,14 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import actions from '../../actions';
+import actions, { requestLogin } from '../../actions';
 
 export function Callback({
-  history,
   location,
   message,
   handleAuthCallback,
+  loginRequest,
 }) {
+    loginRequest();
   // Handle authentication if expected values are in the URL.
   if (/access_token|id_token|error/.test(location.hash)) {
     handleAuthCallback();
@@ -25,7 +26,6 @@ export function Callback({
       <h3>{callbackMsg}</h3>
     </div>
   );
-
 }
 
 Callback.propTypes = {
@@ -40,7 +40,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  handleAuthCallback: () => dispatch(actions.handleAuthCallback())
+  handleAuthCallback: () => dispatch(actions.handleAuthCallback()),
+  loginRequest: () => dispatch(requestLogin()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Callback);

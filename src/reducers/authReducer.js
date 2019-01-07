@@ -6,6 +6,7 @@ import {
   PROFILE_RECEIVE,
 } from '../actions';
 
+
 export const defaultAuthState = {
   profile: {},
   message: '',
