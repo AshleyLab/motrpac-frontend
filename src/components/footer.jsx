@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import actions from '../actions';
 
@@ -32,7 +32,7 @@ export function Footer({
         )}
         {!isAuthenticated && (
           <button type="button" onClick={login} className="logInOutBtn btn">
-            Submitter Log in
+            Submitter Login
           </button>
         )}
       </span>
@@ -55,17 +55,17 @@ export function Footer({
             <p className="footer-content">
               Data Hub designed and maintained by the MoTrPAC BioInformatics
               Center at
-              <Link to="https://www.stanford.edu/" target="_new">
+              <a href="https://www.stanford.edu/" target="_new">
                 {' '}
                 Stanford University
-              </Link>
+              </a>
             </p>
             <p className="footer-content">
               Funded by the
-              <Link to="https://commonfund.nih.gov/" target="_new">
+              <a href="https://commonfund.nih.gov/" target="_new">
                 {' '}
                 NIH Common Fund
-              </Link>
+              </a>
             </p>
           </div>
           <div className="col user-login">
@@ -75,8 +75,6 @@ export function Footer({
         <div className="row">
           <div className="col copyright">
             <p>
-              &#169; Stanford
-              &nbsp;
               {getCopyrightYear()}
               &nbsp;Stanford University
             </p>
