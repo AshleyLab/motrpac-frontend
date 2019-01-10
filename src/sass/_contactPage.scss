@@ -4,9 +4,10 @@
   }
   h5 {
     margin-top: 1.5rem;
+    line-height: 1.5rem;
   }
-  p {
-    margin-bottom: 0;
-    padding-left:1rem;
+  .contactCol {
+    border: 1px solid $dblue;
+    border-radius: 5px;
   }
 }
