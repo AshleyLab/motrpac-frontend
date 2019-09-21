@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import uploadReducer, { defaultUploadState } from '../UploadPage/uploadReducer';
-import authReducer, { defaultAuthState } from '../Auth/authReducer';
 import analysisReducer, { defaultAnalysisState } from '../AnalysisPage/analysisReducer';
 import downloadReducer, { defaultDownloadState } from '../DownloadPage/downloadReducer';
 import searchReducer, { defaultSearchState } from '../Search/searchReducer';
@@ -27,7 +26,6 @@ const testUploadState = {
 
 export default combineReducers({
   upload: uploadReducer,
-  auth: authReducer,
   analysis: analysisReducer,
   download: downloadReducer,
   search: searchReducer,
@@ -36,7 +34,6 @@ export default combineReducers({
 
 export const defaultRootState = {
   upload: loadTestData ? testUploadState : defaultUploadState,
-  auth: defaultAuthState,
   analysis: defaultAnalysisState,
   download: loadTestData ? testDownloadState : defaultDownloadState,
   search: defaultSearchState,
