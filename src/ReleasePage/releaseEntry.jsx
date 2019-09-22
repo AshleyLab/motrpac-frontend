@@ -166,25 +166,25 @@ function ReleaseEntry() {
   }
 
   // Handle modal download button click event
-  function handleGAEvent() {
-    TrackEvent('Release 1 Downloads', modalStatus.file, userMetadata ? userMetadata.name : user.name);
+  function handleGAEvent(releaseVersion) {
+    TrackEvent(`Release ${releaseVersion} Downloads`, modalStatus.file, userMetadata ? userMetadata.name : user.name);
   }
 
   // Render modal message
-  function renderModalMessage() {
+  function renderModalMessage(releaseVersion) {
     if (modalStatus.status !== 'success') {
       return <span className="modal-message">{modalStatus.message}</span>;
     }
 
     return (
       <span className="modal-message">
-        <a href={fileUrl} download onClick={handleGAEvent}>{modalStatus.message}</a>
+        <a href={fileUrl} download onClick={handleGAEvent(releaseVersion)}>{modalStatus.message}</a>
       </span>
     );
   }
 
   // Render modal
-  function renderModal() {
+  function renderModal(releaseVersion) {
     return (
       <div className="modal fade data-download-modal" id="dataDownloadModal" tabIndex="-1" role="dialog" aria-labelledby="dataDownloadModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered" role="document">
@@ -197,7 +197,7 @@ function ReleaseEntry() {
             </div>
             <div className="modal-body">
               {!fetching
-                ? renderModalMessage() : <div className="loading-spinner"><img src={IconSet.Spinner} alt="" /></div>
+                ? renderModalMessage(releaseVersion) : <div className="loading-spinner"><img src={IconSet.Spinner} alt="" /></div>
               }
             </div>
             <div className="modal-footer">
@@ -332,7 +332,7 @@ function ReleaseEntry() {
                           {release.result_files.data_types.map(item => renderDataTypeRow(release.result_files.bucket_name, item, release.version))}
                         </tbody>
                       </table>
-                      {renderModal()}
+                      {renderModal(release.version)}
                     </div>
                   </div>
                   <h6 className="additional-release-download-header">Additional Downloads</h6>
