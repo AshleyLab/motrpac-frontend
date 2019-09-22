@@ -5,14 +5,22 @@ import App from './App/App';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from './Auth/Auth';
 import config from './Auth/auth_config.json';
-import history from './App/history';
 import './main.css';
 
 // Initialize Google Analytics
 initializeReactGA();
 
 const onRedirectCallback = (appState) => {
-  history.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
+  // Firefox workaround
+  window.location.hash = window.location.hash;
+
+  window.history.replaceState(
+    {},
+    document.title,
+    appState && appState.targetUrl
+      ? appState.targetUrl
+      : window.location.pathname,
+  );
 };
 
 render(
