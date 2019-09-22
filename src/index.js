@@ -12,6 +12,7 @@ initializeReactGA();
 
 const onRedirectCallback = (appState) => {
   // Firefox workaround
+  // eslint-disable-next-line
   window.location.hash = window.location.hash;
 
   window.history.replaceState(
