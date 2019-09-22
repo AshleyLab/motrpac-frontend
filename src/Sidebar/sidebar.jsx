@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import actions from '../UploadPage/uploadActions';
+import { useAuth0 } from '../Auth/Auth';
 
 /**
  * Renders the gloabl sidebar.
@@ -12,12 +13,14 @@ import actions from '../UploadPage/uploadActions';
  * @returns {Object} JSX representation of the global sidebar.
  */
 export function Sidebar({
-  isAuthenticated = false,
-  profile,
   clearForm,
   resetDepth,
 }) {
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+  // Custom Hook
+  const { user, isAuthenticated } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
 
   if (!(isAuthenticated && hasAccess)) {
     return '';
@@ -93,10 +96,6 @@ export function Sidebar({
 
   return sidebar;
 }
-const mapStateToProps = state => ({
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
-});
 
 // Need to clear the upload form values and recently uploaded files
 // if user navigates away from and returns to the upload page
@@ -105,4 +104,4 @@ const mapDispatchToProps = dispatch => ({
   resetDepth: () => dispatch({ type: 'RESET_DEPTH' }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export default connect(mapDispatchToProps)(Sidebar);

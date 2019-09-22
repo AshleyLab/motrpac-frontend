@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect, Link } from 'react-router-dom';
-import actions from '../Auth/authActions';
+import { Link } from 'react-router-dom';
+import { useAuth0 } from '../Auth/Auth';
 import LoginButton from '../lib/loginButton';
 import QuickSearchBox from '../Search/quickSearchBox';
 import MoTrPAClogo from '../assets/logo-motrpac.png';
@@ -20,10 +20,6 @@ import SearchActions from '../Search/searchActions';
  * @returns {Object} JSX representation of the global header nav bar.
  */
 export function Navbar({
-  isAuthenticated,
-  profile,
-  login,
-  logout,
   quickSearchTerm,
   handleQuickSearchInputChange,
   handleQuickSearchRequestSubmit,
@@ -31,13 +27,18 @@ export function Navbar({
   getSearchForm,
   resetAdvSearch,
 }) {
-  const handleLogout = () => {
-    logout();
-    // FIXME: Redirect to landing page not working
-    return <Redirect to="/" />;
-  };
+  // Custom Hook
+  const {
+    user,
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+  } = useAuth0();
 
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+  const logoutWithRedirect = () => logout({ returnTo: window.location.origin });
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
 
   if (isAuthenticated && hasAccess) {
     document.querySelector('body').classList.add('authenticated');
@@ -45,27 +46,26 @@ export function Navbar({
 
   // Function to render login button
   const LogoutButton = () => {
-    const userDisplayName = profile.user_metadata && profile.user_metadata.name
-      ? profile.user_metadata.name : profile.name;
-    const siteName = profile.user_metadata && profile.user_metadata.siteName
-      ? `, ${profile.user_metadata.siteName}` : '';
+    const userDefaultName = user && user.name ? user.name : null;
+    const userDisplayName = userMetadata && userMetadata.name ? userMetadata.name : userDefaultName;
+    const siteName = userMetadata && userMetadata.siteName ? `, ${userMetadata.siteName}` : '';
 
     if (isAuthenticated && hasAccess) {
       return (
         <span className="user-logout-button">
-          <img src={profile.picture} className="user-avatar" alt="avatar" />
+          <img src={user.picture} className="user-avatar" alt="avatar" />
           <span className="user-display-name">
             {userDisplayName}
             {siteName}
           </span>
-          <button type="button" onClick={handleLogout} className="logOutBtn btn btn-primary">
+          <button type="button" onClick={() => logoutWithRedirect()} className="logOutBtn btn btn-primary">
             Log out
           </button>
         </span>
       );
     }
 
-    return <LoginButton login={login} />;
+    return <LoginButton login={() => loginWithRedirect({})} />;
   };
 
   const navbar = (
@@ -114,14 +114,6 @@ export function Navbar({
 }
 
 Navbar.propTypes = {
-  profile: PropTypes.shape({
-    name: PropTypes.string,
-    picture: PropTypes.string,
-    user_metadata: PropTypes.object,
-  }),
-  isAuthenticated: PropTypes.bool,
-  login: PropTypes.func,
-  logout: PropTypes.func,
   quickSearchTerm: PropTypes.string,
   handleQuickSearchInputChange: PropTypes.func,
   handleQuickSearchRequestSubmit: PropTypes.func,
@@ -130,10 +122,6 @@ Navbar.propTypes = {
 };
 
 Navbar.defaultProps = {
-  profile: {},
-  isAuthenticated: false,
-  login: null,
-  logout: null,
   quickSearchTerm: '',
   handleQuickSearchInputChange: null,
   handleQuickSearchRequestSubmit: null,
@@ -143,13 +131,9 @@ Navbar.defaultProps = {
 
 const mapStateToProps = state => ({
   ...(state.quickSearch),
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
 });
 
 const mapDispatchToProps = dispatch => ({
-  login: () => dispatch(actions.login()),
-  logout: () => dispatch(actions.logout()),
   handleQuickSearchInputChange: e => dispatch(QuickSearchBoxActions.quickSearchInputChange(e)),
   handleQuickSearchRequestSubmit: searchTerm => dispatch(QuickSearchBoxActions.handleQuickSearchRequestSubmit(searchTerm)),
   resetQuickSearch: () => dispatch(QuickSearchBoxActions.quickSearchReset()),
