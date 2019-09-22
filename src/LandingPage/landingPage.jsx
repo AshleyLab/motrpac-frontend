@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import Particles from 'react-particles-js';
 import { useSpring, animated } from 'react-spring';
+import { useAuth0 } from '../Auth/Auth';
 import LogoAnimation from '../assets/LandingPageGraphics/LogoAnimation_03082019-yellow_pipelineball_left.gif';
 import LayerRunner from '../assets/LandingPageGraphics/Data_Layer_Runner.png';
 import HealthyHeart from '../assets/LandingPageGraphics/Infographic_Healthy_Heart.png';
@@ -15,15 +14,17 @@ const trans3d = (x, y) => `translate3d(${x / 6}px,${y / 16}px,0)`;
 /**
  * Renders the landing page in unauthenticated state.
  *
- * @param {Boolean} isAuthenticated Redux state for user's authentication status.
- * @param {Object}  profile         Redux state for authenticated user's info.
- *
  * @returns {object} JSX representation of the landing page.
  */
-export function LandingPage({ isAuthenticated, profile }) {
+function LandingPage() {
   // Local state for managing particle animation
   const [visibility, setVisibility] = useState(true);
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+  // Custom Hook
+  const { user, isAuthenticated } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
+
   // react-spring set animation values
   const [values, set] = useSpring(() => ({
     xy: [0, 0],
@@ -214,21 +215,4 @@ export function LandingPage({ isAuthenticated, profile }) {
   );
 }
 
-LandingPage.propTypes = {
-  profile: PropTypes.shape({
-    user_metadata: PropTypes.object,
-  }),
-  isAuthenticated: PropTypes.bool,
-};
-
-LandingPage.defaultProps = {
-  profile: {},
-  isAuthenticated: false,
-};
-
-const mapStateToProps = state => ({
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-export default connect(mapStateToProps)(LandingPage);
+export default LandingPage;
