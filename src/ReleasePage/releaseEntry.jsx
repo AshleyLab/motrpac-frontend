@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { TrackEvent } from '../GoogleAnalytics/googleAnalytics';
+import { useAuth0 } from '../Auth/Auth';
 import IconSet from '../lib/iconSet';
 import ToolTip from '../lib/ui/tooltip';
 
@@ -18,7 +18,7 @@ const emojiMap = {
  * @returns {object} JSX representation of each data release item.
  */
 // FIXME: This component needs to be refactored and broken up into smaller modules
-function ReleaseEntry({ profile }) {
+function ReleaseEntry() {
   const [fileUrl, setFileUrl] = useState('');
   const [fetching, setFetching] = useState(true);
   const [modalStatus, setModalStatus] = useState({
@@ -27,6 +27,10 @@ function ReleaseEntry({ profile }) {
     message: '',
   });
   const [visibleReleases, setVisibleReleases] = useState(1);
+  // Custom Hook
+  const { user } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
 
   // Event handler for "Show prior releases" button
   const toggleViewReleaseLength = (e) => {
@@ -163,7 +167,7 @@ function ReleaseEntry({ profile }) {
 
   // Handle modal download button click event
   function handleGAEvent() {
-    TrackEvent('Release 1 Downloads', modalStatus.file, profile.user_metadata.name);
+    TrackEvent('Release 1 Downloads', modalStatus.file, userMetadata ? userMetadata.name : user.name);
   }
 
   // Render modal message
@@ -443,12 +447,5 @@ function ReleaseEntry({ profile }) {
     </div>
   );
 }
-
-ReleaseEntry.propTypes = {
-  profile: PropTypes.shape({
-    name: PropTypes.string,
-    user_metadata: PropTypes.object,
-  }).isRequired,
-};
 
 export default ReleaseEntry;
