@@ -1,134 +1,85 @@
-import auth0 from 'auth0-js';
-import { AUTH0_CONFIG } from './auth0-variables';
+import React, { useState, useEffect, useContext } from 'react';
+import createAuth0Client from '@auth0/auth0-spa-js';
 
-/**
- * A class for Auth0 authentication.
- * @class
- * 
- * @property expiresAt            A timestamp string parsed from localStorage.
- * @property tokenRenewalTimeout  A reference to the setTimeout call.
- * 
- */
-class Auth {
-  expiresAt;
-  tokenRenewalTimeout;
+const DEFAULT_REDIRECT_CALLBACK = () => window.history.replaceState({}, document.title, window.location.pathname);
 
-  /**
-   * @constructor
-   */
-  constructor() {
-    this.auth0 = new auth0.WebAuth({
-      domain: AUTH0_CONFIG.domain,
-      clientID: AUTH0_CONFIG.clientId,
-      redirectUri: AUTH0_CONFIG.callbackUrl,
-      responseType: 'token id_token',
-      scope: 'openid profile',
-    });
+export const Auth0Context = React.createContext();
+export const useAuth0 = () => useContext(Auth0Context);
+export const Auth0Provider = ({
+  children,
+  onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
+  ...initOptions
+}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [user, setUser] = useState();
+  const [auth0Client, setAuth0] = useState();
+  const [loading, setLoading] = useState(true);
+  const [popupOpen, setPopupOpen] = useState(false);
 
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.handleAuthentication = this.handleAuthentication.bind(this);
-    this.isAuthenticated = this.isAuthenticated.bind(this);
-    this.setSession = this.setSession.bind(this);
-    this.getProfile = this.getProfile.bind(this);
-    this.scheduleRenewal();
-  }
+  useEffect(() => {
+    const initAuth0 = async () => {
+      const auth0FromHook = await createAuth0Client(initOptions);
+      setAuth0(auth0FromHook);
 
-  login() {
-    this.auth0.authorize();
-  }
-
-  logout() {
-    // Clear all local storage items upon logging out
-    localStorage.clear();
-    clearTimeout(this.tokenRenewalTimeout);
-    // Clear Auth0 session cookie to prevent Auth0 SSO from automatically
-    // authenticating users of 'Username-Password-Authentication' connection
-    this.auth0.logout({
-      returnTo: window.location.origin
-    });
-  }
-
-  setSession(authResult) {
-    // Set the time that the access token will expire at
-    this.expiresAt = JSON.stringify(
-      authResult.expiresIn * 1000 + new Date().getTime()
-    );
-    localStorage.setItem('access_token', authResult.accessToken);
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem('id_token_payload', JSON.stringify(authResult.idTokenPayload));
-    localStorage.setItem('expires_at', this.expiresAt);
-
-    // schedule a token renewal
-    this.scheduleRenewal();
-  }
-
-  handleAuthentication(cb) {
-    this.auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
-        cb(null, authResult);
-      } else if (err) {
-        console.log(`${err.error}: ${err.errorDescription}`);
-        console.log('Could not authenticate');
-        cb(err);
-      } else {
-        console.log(`Unexpected error encountered: ${authResult}`);
-        cb(new Error('Unexpected error encountered'));
+      if (window.location.search.includes('code=')) {
+        const { appState } = await auth0FromHook.handleRedirectCallback();
+        onRedirectCallback(appState);
       }
-    });
-  }
 
-  isAuthenticated() {
-    if (
-      !localStorage.getItem('access_token') ||
-      !localStorage.getItem('id_token') ||
-      !localStorage.getItem('id_token_payload') ||
-      !localStorage.getItem('expires_at')
-    ) {
-      return false;
-    }
+      const isAuthenticated = await auth0FromHook.isAuthenticated();
 
-    this.expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < this.expiresAt;
-  }
+      setIsAuthenticated(isAuthenticated);
 
-  getProfile(cb) {
-    const idTokenPayload = JSON.parse(localStorage.getItem('id_token_payload'));
-    if (!idTokenPayload) {
-      throw new Error('No id token payload found');
-    }
-    const profile = {
-      name: idTokenPayload.name,
-      nickname: idTokenPayload.nickname,
-      email: idTokenPayload.email,
-      picture: idTokenPayload.picture,
-      user_metadata: idTokenPayload['https://motrpac.org/user_metadata'],
-      app_metadata: idTokenPayload['https://motrpac.org/app_metadata']
-    }
-    cb(null, profile);
-  }
-
-  renewSession() {
-    this.auth0.checkSession({}, (err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
-      } else if (err) {
-        this.logout();
-        console.log(`Could not get a new token (${err.error}: ${err.error_description}).`);
+      if (isAuthenticated) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
       }
-    });
-  }
 
-  scheduleRenewal() {
-    this.expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    const timeout = this.expiresAt - Date.now();
-    if (timeout > 0) {
-      this.tokenRenewalTimeout = setTimeout(() => {
-        this.renewSession();
-      }, timeout);
+      setLoading(false);
+    };
+    initAuth0();
+    // eslint-disable-next-line
+  }, []);
+
+  const loginWithPopup = async (params = {}) => {
+    setPopupOpen(true);
+    try {
+      await auth0Client.loginWithPopup(params);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPopupOpen(false);
     }
-  }
-}
+    const user = await auth0Client.getUser();
+    setUser(user);
+    setIsAuthenticated(true);
+  };
 
-export default Auth;
+  const handleRedirectCallback = async () => {
+    setLoading(true);
+    await auth0Client.handleRedirectCallback();
+    const user = await auth0Client.getUser();
+    setLoading(false);
+    setIsAuthenticated(true);
+    setUser(user);
+  };
+  return (
+    <Auth0Context.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        popupOpen,
+        loginWithPopup,
+        handleRedirectCallback,
+        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
+        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
+        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
+        logout: (...p) => auth0Client.logout(...p)
+      }}
+    >
+      {children}
+    </Auth0Context.Provider>
+  );
+};
