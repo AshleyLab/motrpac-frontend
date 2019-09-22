@@ -12,10 +12,12 @@ import SearchActions from '../Search/searchActions';
 /**
  * Renders the global header nav bar.
  *
- * @param {Boolean}   isAuthenticated Redux state for user's authentication status.
- * @param {Object}    profile         Redux state for authenticated user's info.
- * @param {Function}  login           Redux action for user login.
- * @param {Function}  logout          Redux action for user logout.
+ * @param {String}    quickSearchTerm                 Redux state for quick search input value.
+ * @param {Function}  handleQuickSearchInputChange    Redux action to handle quick search event.
+ * @param {Function}  handleQuickSearchRequestSubmit  Redux action for quick search form submit.
+ * @param {Function}  resetQuickSearch                Redux action to reset quick search.
+ * @param {Function}  getSearchForm                   Redux action to route to advanced search.
+ * @param {Function}  resetAdvSearch                  Redux action to reset advanced search params.
  *
  * @returns {Object} JSX representation of the global header nav bar.
  */
