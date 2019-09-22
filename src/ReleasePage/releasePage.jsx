@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
+import { useAuth0 } from '../Auth/Auth';
 import ReleaseEntry from './releaseEntry';
 import IconSet from '../lib/iconSet';
 
@@ -12,29 +11,12 @@ import IconSet from '../lib/iconSet';
  *
  * @returns {object} JSX representation of data release page elements.
  */
-export function ReleasePage({
-  isPending,
-  isAuthenticated,
-  profile,
-}) {
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+function ReleasePage() {
+  // Custom Hook
+  const { user, isAuthenticated } = useAuth0();
 
-  // FIXME: temp workaround to handle callback redirect
-  if (isPending) {
-    const pendingMsg = 'Authenticating...';
-
-    return (
-      <div className="authLoading">
-        <span className="oi oi-shield" />
-        <h3>{pendingMsg}</h3>
-      </div>
-    );
-  }
-
-  // Send users back to homepage if not authenticated
-  if (!isAuthenticated) {
-    return (<Redirect to="/" />);
-  }
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
 
   if (isAuthenticated) {
     if (!hasAccess) {
@@ -56,24 +38,9 @@ export function ReleasePage({
           </div>
         </div>
       </div>
-      <ReleaseEntry profile={profile} />
+      <ReleaseEntry />
     </div>
   );
 }
 
-ReleasePage.propTypes = {
-  isPending: PropTypes.bool.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  profile: PropTypes.shape({
-    name: PropTypes.string,
-    user_metadata: PropTypes.object,
-  }).isRequired,
-};
-
-const mapStateToProps = state => ({
-  isPending: state.auth.isPending,
-  isAuthenticated: state.auth.isAuthenticated,
-  profile: state.auth.profile,
-});
-
-export default connect(mapStateToProps)(ReleasePage);
+export default ReleasePage;
