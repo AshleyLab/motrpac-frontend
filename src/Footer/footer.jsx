@@ -1,24 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import actions from '../Auth/authActions';
+import { useAuth0 } from '../Auth/Auth';
 import LoginButton from '../lib/loginButton';
 import MoTrPAClogo from '../assets/logo-motrpac.png';
 
 /**
  * Renders the global footer.
  *
- * @param {Boolean}   isAuthenticated Redux state for user's authentication status.
- * @param {Object}    profile         Redux state for authenticated user's info.
- * @param {Function}  login           Redux action for user login.
- *
  * @returns {object} JSX representation of the global footer.
  */
-export function Footer({
-  isAuthenticated,
-  profile,
-  login,
-}) {
+function Footer() {
+  // Custom Hook
+  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+
   // Function to get current copyright year
   const getCopyrightYear = () => {
     const today = new Date();
@@ -26,7 +19,8 @@ export function Footer({
     return year;
   };
 
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
 
   // TODO: Find out how to best do error handling
   return (
@@ -45,7 +39,7 @@ export function Footer({
                 <li className="nav-item navItem"><a href="/team" className="nav-link">About Us</a></li>
                 <li className="nav-item navItem"><a href="/contact" className="nav-link">Contact Us</a></li>
                 <li className="nav-item navItem">
-                  <LoginButton login={login} />
+                  <LoginButton login={() => loginWithRedirect({})} />
                 </li>
               </ul>
             </div>
@@ -80,26 +74,4 @@ export function Footer({
   );
 }
 
-Footer.propTypes = {
-  profile: PropTypes.shape({
-    user_metadata: PropTypes.object,
-  }),
-  isAuthenticated: PropTypes.bool,
-  login: PropTypes.func.isRequired,
-};
-
-Footer.defaultProps = {
-  profile: {},
-  isAuthenticated: false,
-};
-
-const mapStateToProps = state => ({
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-const mapDispatchToProps = dispatch => ({
-  login: () => dispatch(actions.login()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Footer);
+export default Footer;
