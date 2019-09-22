@@ -7,8 +7,8 @@ import { useAuth0 } from '../Auth/Auth';
 /**
  * Renders the gloabl sidebar.
  *
- * @param {Boolean} isAuthenticated Redux state for user's authentication status.
- * @param {Object}  profile         Redux state for authenticated user's info.
+ * @param {Function} clearForm   Redux action to reset upload form.
+ * @param {Function} resetDepth  Redux action to reset analysis page depth.
  *
  * @returns {Object} JSX representation of the global sidebar.
  */
@@ -25,6 +25,7 @@ export function Sidebar({
   if (!(isAuthenticated && hasAccess)) {
     return '';
   }
+
   const sidebar = (
     <nav className="col-md-2 d-none d-md-block bg-light sidebar">
       <div className="sidebar-sticky">
