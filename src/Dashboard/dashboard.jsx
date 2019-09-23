@@ -7,106 +7,93 @@ import PreviousUploadsGraph from '../Widgets/previousUploadsGraph';
 import AllUploadsDoughnut from '../Widgets/allUploadsDoughnut';
 import AllUploadStats from '../Widgets/allUploadStats';
 import actions from '../UploadPage/uploadActions';
+import { useAuth0 } from '../Auth/Auth';
 
 const allUploads = require('../testData/testAllUploads');
 
 /**
  * Renders the Dashboard page.
  *
- * @param {Boolean}   isAuthenticated Redux state for user's authentication status.
- * @param {Boolean}   isPending       Redux state for user's authentication progress.
- * @param {Object}    profile         Redux state for authenticated user's info.
+ * @param {Object}    featureAvailable      Flag to render dashboard edit button.
+ * @param {Array}     previousUploads       Redux state for user's previous uploads.
+ * @param {Boolean}   disconnectComponents  Flag to render Redux-connected previous upload table.
+ * @param {Function}  clearForm             Redux action to reset upload form.
  *
- * @returns {object} JSX representation of the global footer.
+ * @returns {object} JSX representation of the dashboard page.
  */
 export function Dashboard({
-  profile,
-  isAuthenticated,
-  isPending,
   featureAvailable,
   previousUploads,
   disconnectComponents,
   clearForm,
 }) {
+  // Custom Hook
+  const { user, isAuthenticated } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
+
+  if (isAuthenticated) {
+    if (!hasAccess) {
+      return (<Redirect to="/error" />);
+    }
+  }
+
   const editBtn = (
     <div className="col-auto">
       <Link className="editBtn btn btn-light disabled" to="/edit-dashboard">Edit Dashboard</Link>
     </div>
   );
 
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
-
-  // FIXME: temp workaround to handle callback redirect
-  if (isPending) {
-    const pendingMsg = 'Authenticating...';
-
-    return (
-      <div className="authLoading">
-        <span className="oi oi-shield" />
-        <h3>{pendingMsg}</h3>
+  return (
+    <div className="col-md-9 ml-sm-auto col-lg-10 px-4 Dashboard">
+      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div className="page-title">
+          <h3>Dashboard</h3>
+        </div>
+        <div className="btn-toolbar">
+          <div className="btn-group">
+            <Link className="uploadBtn btn btn-sm btn-outline-primary" to="/upload" onClick={clearForm}>Upload Data</Link>
+            <Link className="downloadBtn btn btn-sm btn-outline-primary" to="/download">Download/View Data</Link>
+          </div>
+        </div>
+        {featureAvailable.dashboardEditable ? editBtn : ''}
       </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    if (!hasAccess) {
-      return (<Redirect to="/error" />);
-    }
-
-    return (
-      <div className="col-md-9 ml-sm-auto col-lg-10 px-4 Dashboard">
-        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <div className="page-title">
-            <h3>Dashboard</h3>
-          </div>
-          <div className="btn-toolbar">
-            <div className="btn-group">
-              <Link className="uploadBtn btn btn-sm btn-outline-primary" to="/upload" onClick={clearForm}>Upload Data</Link>
-              <Link className="downloadBtn btn btn-sm btn-outline-primary" to="/download">Download/View Data</Link>
-            </div>
-          </div>
-          {featureAvailable.dashboardEditable ? editBtn : ''}
-        </div>
-        <div className="previous-uploads-table">
-          <div className="card">
-            <h5 className="card-header">Uploads</h5>
-            <div className="card-body">
-              { disconnectComponents ? <PreviousUploadsTable previousUploads={previousUploads} /> : <PreviousUploadsTableConnected /> }
-            </div>
+      <div className="previous-uploads-table">
+        <div className="card">
+          <h5 className="card-header">Uploads</h5>
+          <div className="card-body">
+            { disconnectComponents
+              ? <PreviousUploadsTable previousUploads={previousUploads} />
+              : <PreviousUploadsTableConnected />
+            }
           </div>
         </div>
-        <div className="previous-uploads-graph">
-          <div className="card">
-            <h5 className="card-header">Assay Categories</h5>
-            <div className="card-body">
-              <PreviousUploadsGraph previousUploads={previousUploads} />
-            </div>
+      </div>
+      <div className="previous-uploads-graph">
+        <div className="card">
+          <h5 className="card-header">Assay Categories</h5>
+          <div className="card-body">
+            <PreviousUploadsGraph previousUploads={previousUploads} />
           </div>
         </div>
-        <div className="total-uploads-graph">
-          <div className="card">
-            <h5 className="card-header">Total Uploads By All Sites</h5>
-            <div className="card-body">
-              <div className="row justify-content-center">
-                <AllUploadsDoughnut allUploads={allUploads} />
-                <AllUploadStats />
-              </div>
+      </div>
+      <div className="total-uploads-graph">
+        <div className="card">
+          <h5 className="card-header">Total Uploads By All Sites</h5>
+          <div className="card-body">
+            <div className="row justify-content-center">
+              <AllUploadsDoughnut allUploads={allUploads} />
+              <AllUploadStats />
             </div>
           </div>
         </div>
       </div>
-    );
-  }
-
-  return (<Redirect to="/" />);
+    </div>
+  );
 }
 
 Dashboard.propTypes = {
-  profile: PropTypes.shape({
-    user_metadata: PropTypes.object,
-  }),
-  isAuthenticated: PropTypes.bool,
-  isPending: PropTypes.bool,
   featureAvailable: PropTypes.shape({
     dashboardEditable: PropTypes.bool,
   }),
@@ -118,9 +105,6 @@ Dashboard.propTypes = {
 };
 
 Dashboard.defaultProps = {
-  profile: {},
-  isAuthenticated: false,
-  isPending: false,
   featureAvailable: {
     dashboardEditable: false,
   },
@@ -128,9 +112,6 @@ Dashboard.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
-  isPending: state.auth.isPending,
   previousUploads: state.upload.previousUploads,
 });
 
