@@ -64,8 +64,6 @@ const linkList = [
  * Renders the External Links page in both
  * unauthenticated and authenticated states.
  *
- * @param {Boolean} isAuthenticated Redux state for user's authentication status.
- *
  * @returns {Object} JSX representation of the External Links page.
  */
 function LinkoutPage() {
