@@ -48,7 +48,7 @@ function Contact() {
               </p>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   );

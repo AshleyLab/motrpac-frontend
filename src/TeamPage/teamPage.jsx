@@ -41,7 +41,7 @@ function TeamPage() {
         </div>
         <div className="row pt-3 pb-2 border-top">
           {Alumni}
-        </div>        
+        </div>
       </div>
     </div>
   );
