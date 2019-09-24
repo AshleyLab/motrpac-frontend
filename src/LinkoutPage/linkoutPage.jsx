@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useAuth0 } from '../Auth/Auth';
 import MOTRLogo from '../assets/MoTrPAC_horizontal.png';
 import NIHLogo from '../assets/ExternalLogos/NIHCommonFund.png';
 import ENCODELogo from '../assets/ExternalLogos/ENCODE.png';
@@ -68,7 +68,10 @@ const linkList = [
  *
  * @returns {Object} JSX representation of the External Links page.
  */
-export function LinkoutPage({ isAuthenticated }) {
+function LinkoutPage() {
+  // Custom Hook
+  const { isAuthenticated } = useAuth0();
+
   const links = linkList.map(category => (
     <div key={category.name} className="LinkCategory">
       <h4>{category.name}</h4>
@@ -142,16 +145,4 @@ UsefulLink.propTypes = {
   }).isRequired,
 };
 
-LinkoutPage.propTypes = {
-  isAuthenticated: PropTypes.bool,
-};
-
-LinkoutPage.defaultProps = {
-  isAuthenticated: false,
-};
-
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-export default connect(mapStateToProps)(LinkoutPage);
+export default LinkoutPage;

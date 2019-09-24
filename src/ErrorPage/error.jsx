@@ -1,15 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { useAuth0 } from '../Auth/Auth';
 
 /**
  * Renders the Error page.
  *
  * @returns {Object} JSX representation of the Error page.
  */
-export function ErrorPage({ isAuthenticated, profile }) {
-  const hasAccess = profile.user_metadata && profile.user_metadata.hasAccess;
+export function ErrorPage() {
+  // Custom Hook
+  const { user, isAuthenticated } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const hasAccess = userMetadata && userMetadata.hasAccess;
 
   if (isAuthenticated && hasAccess) {
     return <Redirect to="/releases" />;
@@ -34,22 +37,4 @@ export function ErrorPage({ isAuthenticated, profile }) {
   );
 }
 
-ErrorPage.propTypes = {
-  profile: PropTypes.shape({
-    user_metadata: PropTypes.object,
-  }),
-  isAuthenticated: PropTypes.bool,
-};
-
-ErrorPage.defaultProps = {
-  profile: {},
-  isAuthenticated: false,
-};
-
-const mapStateToProps = state => ({
-  profile: state.auth.profile,
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-export default connect(mapStateToProps)(ErrorPage);
-
+export default ErrorPage;

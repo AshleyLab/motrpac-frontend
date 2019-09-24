@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useAuth0 } from '../Auth/Auth';
 import TeamMemberCard from './teamMemberCard';
 import teamInfo from '../lib/teamInfo';
 
@@ -8,11 +7,12 @@ import teamInfo from '../lib/teamInfo';
  * The team page, includes all team members listed in the /src/lib/teamInfo.json file.
  * Members seperated by Principal Investigators, Staff and Co-Investigators
  *
- * @param {Boolean} isAuthenticated Redux state for user's authentication status.
- *
  * @returns {Object} JSX representation of the Team page.
  */
-export function TeamPage({ isAuthenticated }) {
+function TeamPage() {
+  // Custom Hook
+  const { isAuthenticated } = useAuth0();
+
   const PIs = teamInfo.PIs
     .map(pi => <TeamMemberCard key={pi.name} memberInfo={pi} />);
   const staff = teamInfo.Staff
@@ -21,8 +21,8 @@ export function TeamPage({ isAuthenticated }) {
     .map(coi => <TeamMemberCard key={coi.name} memberInfo={coi} />);
   const Alumni = teamInfo.Alumni
     .map(alumni => <TeamMemberCard key={alumni.name} memberInfo={alumni} />);
-  
-    return (
+
+  return (
     <div className={`teamPage col-md-9 ${isAuthenticated ? 'ml-sm-auto' : ''} col-lg-10 px-4`}>
       <div className={`${!isAuthenticated ? 'container' : ''}`}>
         <div className="page-title pt-3 pb-2 border-bottom">
@@ -47,16 +47,4 @@ export function TeamPage({ isAuthenticated }) {
   );
 }
 
-TeamPage.propTypes = {
-  isAuthenticated: PropTypes.bool,
-};
-
-TeamPage.defaultProps = {
-  isAuthenticated: false,
-};
-
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-export default connect(mapStateToProps)(TeamPage);
+export default TeamPage;
