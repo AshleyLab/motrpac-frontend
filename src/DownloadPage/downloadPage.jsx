@@ -1,15 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { useAuth0 } from '../Auth/Auth';
 import DownloadDataTable from './downloadDataTable';
 import DownloadFilter from './downloadFilter';
 import DownloadPaginator from './downloadPaginator';
 import actions from './downloadActions';
 
 export function DownloadPage({
-  isAuthenticated,
-  profile,
   filteredUploads,
   cartItems,
   uploadCount,
@@ -27,10 +25,12 @@ export function DownloadPage({
   onChangeFilter,
   changePageRequest,
 }) {
-  const siteName = profile.user_metadata && profile.user_metadata.siteName ? profile.user_metadata.siteName : null;
-  if (!isAuthenticated) {
-    return <Redirect to="/" />;
-  }
+  // Custom Hook
+  const { user } = useAuth0();
+
+  const userMetadata = user && user['https://motrpac.org/user_metadata'] ? user['https://motrpac.org/user_metadata'] : null;
+  const siteName = userMetadata && userMetadata.siteName ? userMetadata.siteName : null;
+
   return (
     <div className="downloadPage col-md-9 ml-sm-auto col-lg-10 px-4">
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -82,8 +82,6 @@ DownloadPage.propTypes = {
   cartItems: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   sortBy: PropTypes.string,
   uploadCount: PropTypes.number.isRequired,
-  isAuthenticated: PropTypes.bool,
-  profile: PropTypes.object,
   viewCart: PropTypes.bool.isRequired,
   listUpdating: PropTypes.bool.isRequired,
   activeFilters: DownloadFilter.propTypes.activeFilters.isRequired,
@@ -99,16 +97,12 @@ DownloadPage.propTypes = {
 };
 DownloadPage.defaultProps = {
   sortBy: 'identifier',
-  isAuthenticated: false,
-  profile: {},
 };
 
 const mapStateToProps = state => ({
   sortBy: state.download.sortBy,
-  profile: state.auth.profile,
   filteredUploads: state.download.filteredUploads,
   cartItems: state.download.cartItems,
-  isAuthenticated: state.auth.isAuthenticated,
   activeFilters: state.download.activeFilters,
   currentPage: state.download.currentPage,
   maxRows: state.download.maxRows,
