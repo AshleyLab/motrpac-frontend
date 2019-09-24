@@ -4,7 +4,7 @@ import { initializeReactGA } from './GoogleAnalytics/googleAnalytics';
 import App from './App/App';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from './Auth/Auth';
-import config from './Auth/auth_config.json';
+import AUTH0_CONFIG from './Auth/auth_config';
 import './main.css';
 
 // Initialize Google Analytics
@@ -26,8 +26,8 @@ const onRedirectCallback = (appState) => {
 
 render(
   <Auth0Provider
-    domain={config.domain}
-    client_id={config.clientId}
+    domain={AUTH0_CONFIG.domain}
+    client_id={AUTH0_CONFIG.clientId}
     redirect_uri={window.location.origin}
     onRedirectCallback={onRedirectCallback}
   >
