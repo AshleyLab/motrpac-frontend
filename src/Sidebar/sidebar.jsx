@@ -12,10 +12,7 @@ import { useAuth0 } from '../Auth/Auth';
  *
  * @returns {Object} JSX representation of the global sidebar.
  */
-export function Sidebar({
-  clearForm,
-  resetDepth,
-}) {
+export function Sidebar({ clearForm }) {
   // Custom Hook
   const { user, isAuthenticated } = useAuth0();
 
