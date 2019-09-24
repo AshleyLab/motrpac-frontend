@@ -10,7 +10,6 @@ import HumanDataAnalysis from './humanDataAnalysis';
 
 export function AnalysisHomePage({
   match, // match object from react-router used to find human vs animal in route
-  isAuthenticated,
   depth,
   currentAnalysis,
   currentAnalysisTitle,
@@ -23,8 +22,8 @@ export function AnalysisHomePage({
   let subjectType = match.params.subjectType.slice(0).toLowerCase();
 
   // Redirects to dashboard if incorrect url
-  if (!(subjectType === 'animal' || subjectType === 'human') || !isAuthenticated) {
-    return <Redirect to="/dashboard" />;
+  if (!(subjectType === 'animal' || subjectType === 'human')) {
+    return <Redirect to="/releases" />;
   }
   // Button to select inital analysis category
   function AnalysisTypeButton({ analysisType }) {
@@ -208,7 +207,6 @@ AnalysisHomePage.propTypes = {
     }).isRequired,
   }),
   depth: PropTypes.number.isRequired,
-  isAuthenticated: PropTypes.bool,
   currentAnalysis: PropTypes.string.isRequired,
   currentAnalysisTitle: PropTypes.string.isRequired,
   currentSubAnalysis: PropTypes.string.isRequired,
@@ -224,7 +222,6 @@ AnalysisHomePage.defaultProps = {
       subjectType: '',
     },
   },
-  isAuthenticated: false,
 };
 
 const mapStateToProps = state => ({
@@ -233,7 +230,6 @@ const mapStateToProps = state => ({
   currentAnalysisTitle: state.analysis.currentAnalysisTitle,
   currentSubAnalysis: state.analysis.currentSubAnalysis,
   currentSubAnalysisTitle: state.analysis.currentSubAnalysisTitle,
-  isAuthenticated: state.auth.isAuthenticated,
 });
 
 const mapDispatchToProps = dispatch => ({
