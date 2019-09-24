@@ -49,13 +49,13 @@ export function Sidebar({
         </h6>
         <ul className="nav flex-column mb-2">
           <li className="nav-item">
-            <Link to="/analysis/animal" onClick={resetDepth} className="nav-link d-inline-flex align-items-center">
+            <Link to="/analysis/animal" className="nav-link d-inline-flex align-items-center">
               <span className="icon-Animal nav-link-icon" />
                 Animal
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/analysis/human" onClick={resetDepth} className="nav-link d-inline-flex align-items-center">
+            <Link to="/analysis/human" className="nav-link d-inline-flex align-items-center">
               <i className="material-icons nav-link-icon">person</i>
                 Human
             </Link>
