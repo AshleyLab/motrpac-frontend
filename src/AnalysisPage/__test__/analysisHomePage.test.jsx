@@ -21,10 +21,6 @@ analysisTypes.forEach((analysis) => {
 
 const loggedInRootState = {
   ...defaultRootState,
-  auth: {
-    ...defaultRootState.auth,
-    isAuthenticated: true,
-  },
 };
 
 const analysisActions = {
@@ -36,7 +32,6 @@ const analysisActions = {
 function constructMatchState(subject) {
   return {
     ...defaultAnalysisState,
-    isAuthenticated: true,
     match: {
       params: {
         subjectType: subject,
@@ -46,24 +41,14 @@ function constructMatchState(subject) {
 }
 
 describe('Pure Analysis Home Page', () => {
-  test('Redirects to home if not logged in', () => {
+  test('Renders page not found message if no url match (animal or human)', () => {
     const shallowAnalysis = shallow(
       <AnalysisHomePage
         {...defaultAnalysisState}
         {...analysisActions}
       />,
     );
-    expect(shallowAnalysis.find('Redirect')).toHaveLength(1);
-  });
-  test('Redirects if no url match (animal or human)', () => {
-    const shallowAnalysis = shallow(
-      <AnalysisHomePage
-        {...defaultAnalysisState}
-        {...analysisActions}
-        loggedIn
-      />,
-    );
-    expect(shallowAnalysis.find('Redirect')).toHaveLength(1);
+    expect(shallowAnalysis.find('.page-not-found-message')).toHaveLength(1);
   });
 
   const matchingSubjects = ['human', 'animal', 'HUMAN', 'ANIMAL', 'huMan', 'aNimaL', 'Human', 'Animal'];
@@ -76,7 +61,7 @@ describe('Pure Analysis Home Page', () => {
           {...analysisActions}
         />,
       );
-      expect(shallowAnalysis.find('Redirect')).toHaveLength(0);
+      expect(shallowAnalysis.find('.page-not-found-message')).toHaveLength(0);
     });
   });
 
