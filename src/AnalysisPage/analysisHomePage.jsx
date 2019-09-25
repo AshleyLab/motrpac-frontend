@@ -23,8 +23,15 @@ export function AnalysisHomePage({
 
   // Redirects to dashboard if incorrect url
   if (!(subjectType === 'animal' || subjectType === 'human')) {
-    return <Redirect to="/releases" />;
+    return (
+      <div className="col-md-9 ml-sm-auto col-lg-10 px-4 mt-2">
+        <h3>
+          Page not found.
+        </h3>
+      </div>
+    );
   }
+
   // Button to select inital analysis category
   function AnalysisTypeButton({ analysisType }) {
     if (analysisType.active) {
