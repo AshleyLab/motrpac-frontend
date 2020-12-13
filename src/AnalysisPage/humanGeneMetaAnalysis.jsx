@@ -230,7 +230,7 @@ function HumanGeneMetaAnalysis({
         const bounds = confidenceIntervalBounds(item);
         value = `${item.V1.substring(3)}, ${
           trainingTypeMappings[item.training]
-        }, ${item.time}, ${classificationMathRound(
+        }, ${item.time} / ${classificationMathRound(
           Number(item.yi),
           2
         )} [${classificationMathRound(
@@ -260,7 +260,7 @@ function HumanGeneMetaAnalysis({
         >
           <VictoryGroup>
             <VictoryScatter
-              style={{ data: { fill: '#000' } }}
+              style={{ data: { fill: '#2094e8' } }}
               size={7}
               data={plotData('scatter', geneAnalysisData)}
             />
@@ -269,6 +269,7 @@ function HumanGeneMetaAnalysis({
               data={plotData('errorbar', geneAnalysisData)}
               style={{
                 data: {
+                  stroke: '#2094e8',
                   strokeWidth: 1,
                 },
               }}
@@ -278,7 +279,7 @@ function HumanGeneMetaAnalysis({
             crossAxis
             label="log2(fchange)"
             style={{
-              axisLabel: { fontSize: 12, padding: 10 },
+              axisLabel: { fontSize: 11, padding: 10 },
               ticks: { stroke: '#000', size: 5 },
               tickLabels: { fontSize: 9, padding: 2 },
             }}
@@ -315,9 +316,17 @@ function HumanGeneMetaAnalysis({
           </span>
           {savedGeneSearches.map((item) => {
             return (
-              <span key={item} className="badge badge-pill badge-success mr-2">
+              <button
+                type="button"
+                key={item}
+                className="btn btn-success btn-sm saved-search mr-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchGeneData(item);
+                }}
+              >
                 {item}
-              </span>
+              </button>
             );
           })}
         </div>
@@ -392,20 +401,6 @@ function HumanGeneMetaAnalysis({
 
   return (
     <div className="human-gene-meta-analysis">
-      {/*
-      <div className="alert alert-warning alert-dismissible fade show warning-note d-flex align-items-center" role="alert">
-        <span className="material-icons">info</span>
-        <span className="warning-note-text">
-          The following analyses use existing published data sets. They
-          do not represent the complete meta-analysis data set. Only
-          5 genes (FOXO1, ID1, PPARGC1A, SMAD3, VEGFA) are available for
-          searching in this release.
-        </span>
-        <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      */}
       <div className="meta-analysis-content-container pt-2">
         {/* gene search */}
         <div className="gene-search-container px-0 mb-3">
@@ -438,7 +433,7 @@ function HumanGeneMetaAnalysis({
                   <button
                     type="button"
                     id="gene-search-btn"
-                    className="btn btn-primary"
+                    className="btn btn-primary submit-gene-search"
                     onClick={(e) => {
                       e.preventDefault();
                       fetchGeneData(geneSearchInput);
