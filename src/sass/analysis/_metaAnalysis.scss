@@ -35,8 +35,17 @@
           border-color: $primary-blue;
         }
 
-        button {
+        button.submit-gene-search {
           line-height: 0;
+        }
+
+        button.saved-search {
+          border-radius: 14px;
+          cursor: default;
+          font-size: 0.85rem;
+          font-weight: 600;
+          padding-top: 2px;
+          padding-bottom: 2px;
         }
       }
     }
